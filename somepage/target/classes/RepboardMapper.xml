@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RepboardMapper">
+
+<resultMap id="repMap" type="java.util.Map">
+    <result property="no" column="no" />
+    <result property="password" column="password" />
+</resultMap>
+
+
+<select id="chkPassword" parameterType="java.util.Map"
+                         resultType="Boolean">
+SELECT * FROM REPBOARD WHERE no=#{no} AND password=#{password}
+</select>
+
+
+<delete id="delete" parameterType="int">
+DELETE Repboard  WHERE no=#{no}
+</delete>
+
+
+<select id="selectMaxNo"  resultType="int">
+select max(no) from repboard
+</select>
+
+
+<insert id="insert" parameterType="Repboard">
+ <if test="filename == null">
+ INSERT INTO Repboard(no, parent_no, subject, content, password)
+VALUES (Repboard_seq.NEXTVAL, #{parent_no}, #{subject}, #{content}, #{password})
+ </if>
+ <if test="filename != null">
+INSERT INTO Repboard(no, parent_no, subject, content, password, filename)
+VALUES (Repboard_seq.NEXTVAL, #{parent_no}, #{subject}, #{content}, #{password}, #{filename})
+ </if>
+</insert>
+
+
+<select id="selectAll"  resultType="Repboard">
+SELECT LEVEL,ROWNUM, a.*
+from REPBOARD a
+start with parent_no=0
+connect by prior no=parent_no
+order siblings by no DESC
+</select>
+
+
+<select id="selectByNo"  resultType="Repboard"  parameterType="int" >
+SELECT level, rownum, a.*
+from repboard a
+start with no= #{no}
+connect by prior no=parent_no
+order siblings by no desc
+</select>
+
+
+<select id="selectByName"  resultType="Repboard"  parameterType="String" >
+select a.* from Repboard a where subject like '%${value}%'	
+</select>
+
+
+  <!-- <select id="selectCount2" resultType="hashmap"
+  							parameterType="String">  
+  SELECT COUNT(*) cnt1,COUNT(*) cnt2   별칭은 키값이 됨
+  FROM customer
+  WHERE name LIKE'%${value}%'
+  </select> -->
+ <!-- #{subject},#{content} -->
+ 
+ <resultMap id="updateMap" type="java.lang.StringBuffer">
+    <result property="no" column="no"/>
+    <result property="subject" column="subject" />
+    <result property="content" column="content" />
+</resultMap>
+
+
+<update id="update" parameterType="java.util.Map">
+UPDATE Repboard SET ${set} WHERE no=#{no}
+</update>
+
+
+</mapper>

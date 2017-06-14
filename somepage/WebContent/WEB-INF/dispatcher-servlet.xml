@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	
+	
+	<!-- dao에 관련된설정 (datasource) 부분은 재사용해야하기 때문에 여기에 넣지 않는다-->
+	<!-- 여기선 web에 관련된 설정만 할거다 -->
+	<!-- 순서상 db와의 연결이 잘 되어야 web과의 작업이 이루어질 수 있도록 설계하는것이 좋다. -->
+	
+
+	<!-- 컨트롤러의 역할을 할 아이들을 설정한다 -->
+	
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan base-package="com.my.control"></context:component-scan>
+	<mvc:annotation-driven></mvc:annotation-driven>
+	<mvc:default-servlet-handler/>
+	
+	<!-- <bean  id="viewresolver"  class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="suffix"  value=".jsp"></property>
+		<property name="prefix"  value="/WEB-INF/view/"></property>
+	</bean> -->
+	
+	
+	
+	
+</beans>

@@ -1,0 +1,50 @@
+<!-- <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CustomerMapper">
+
+
+  <select id="selectById" parameterType="String" resultType="Customer">
+  SELECT * FROM customer WHERE id = #{id}	
+  </select>
+  
+  <select id="selectAll" resultType="Customer" parameterType="String" >
+  SELECT * FROM customer ORDER BY ID ${value}
+  </select>
+  
+  <select id="selectCount" resultType="int">
+  SELECT COUNT(*)
+  FROM customer
+  WHERE name LIKE #{word}
+  </select>
+  
+  <select id="selectCount2" resultType="hashmap"
+  							parameterType="String">  
+  SELECT COUNT(*) cnt1,COUNT(*) cnt2   별칭은 키값이 됨
+  FROM customer
+  WHERE name LIKE'%${value}%'
+  </select>
+
+  <insert id="insert" parameterType="Customer">
+  INSERT INTO customer(id, password,name)
+  VALUES(#{id}, #{password}, #{name})
+  </insert>
+  
+  <update id="update">
+  UPDATE customer SET name=#{name}
+  WHERE id=#{id}
+  </update>
+  
+  
+  
+  
+  
+</mapper>
+
+
+
+
+
+
+ -->

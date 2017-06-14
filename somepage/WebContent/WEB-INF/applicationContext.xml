@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+		
+	 <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+	   <property name="driverClass" value="oracle.jdbc.driver.OracleDriver"/>
+	   <property name="url" value="jdbc:oracle:thin:@192.168.12.38:1521:XE"/>
+	   <property name="username" value="test2"/>
+	   <property name="password" value="test2"/>
+	  </bean>
+		
+	<bean id = "transactionManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	  <property name = "dataSource"  ref = "dataSource"></property>
+	 </bean>	
+	 
+	   <bean id="sqlSessionFactory"  class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" /> 
+        <property name="configLocation"  value="classpath:mybatis-config.xml" />
+	  </bean>
+		
+		<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+	    <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+	 </bean>
+	 
+	 <context:annotation-config></context:annotation-config>
+	 <context:component-scan base-package="com.my.dao"></context:component-scan>
+	 <context:component-scan base-package="com.my.service"></context:component-scan>
+	 <tx:annotation-driven transaction-manager="transactionManager"/>
+	 
+	 
+	 <bean id="messageSource" class = "org.springframework.context.support.ResourceBundleMessageSource">
+	   <property name="basenames">
+	 	 <list>
+			<value>message</value>	  
+			<value>error</value>	 
+	  	</list>
+	   </property>
+	 </bean>
+	 
+		
+</beans>	
+<!-- 
+	
+	DB연결 관련 모든것~~~~	
+    스트링컨테이너가 관리한 트랙잭션매니저
+	마이바티스설정연결
+	dao에서 사용할 sqlSession 객체!!!
+	dao 패키지에 있는 객체를 자동생성한다
+	트랜잭션 어노테이션을 사용하기 위한 설정
+	
+ -->

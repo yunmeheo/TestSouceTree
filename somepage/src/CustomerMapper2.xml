@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CustomerMapper2">
+
+
+<insert id="insert" parameterType="Customer">
+insert into customer(id, password, name, sign_date) values(#{id},#{password},#{name},sysdate)
+</insert>
+
+
+<select id="selectAll" resultType="Customer">
+select * from customer order by id
+</select>
+
+
+<select id="selectById"  resultType="Customer" 
+						 parameterType="String">
+select * from customer where id = #{id}
+</select>
+
+
+
+<select id="selectByName" resultType="Customer" parameterType="String">
+select * from customer where name like '%${value}%'
+</select>	
+
+
+<select id="selectByChk" resultType="Customer" parameterType="String">
+select * from customer where status 
+<choose>
+<when test="value!=null">
+= #{value}
+</when>
+<otherwise>
+is null
+</otherwise>
+</choose>
+</select> 
+	
+		
+<update id="modifyPassword" parameterType="java.util.Map">
+update customer set password=#{password} where id=#{id}
+</update>   
+
+
+
+
+<update id="modifyName" parameterType="Customer">
+update customer set name=#{name} where id=#{id}
+</update>  
+
+
+
+<!-- <update  id="update" parameterType="Customer" >
+update customer
+	<set>
+		<if test="password !=null"> password=#{password},</if>
+		<if test="name !=null"> name=#{name},</if>
+	</set>
+where id=#{id}
+</update> -->
+
+
+
+</mapper>
+
+
+

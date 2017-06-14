@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminMapper">
+
+<!-- 참조할 맵을 다시한번 설정: orderInfo 안에있는 객체들 다시정의-->
+<resultMap id="StatMap"  type="OrderInfo" >
+  <!-- 기본키 설정 -->
+  <id column="info_no" property="info_no"/>
+  <result column="info_date"  property="info_date"/>
+  <!-- 연관관계용 -->
+  <association property="info_c" javaType="Customer">
+    <id column="ID"  property="id" />
+    <result column="PASSWORD"  property="password" />
+    <result column="NAME"  property="name" />
+  </association>
+  
+  <!-- orderInfo 안에있는 orderLine 타입의 객체들 -->
+  <collection property="lines"  ofType="OrderLine" >
+  <!-- 기본키 설정 -->
+    <result column="line_info_no" property="LINE_INFO_NO"/>
+    <result column="sum"  property="line_quantity"/>
+    
+    <!-- 연관관계용 -->
+    <association property="line_prod_no" javaType="Product">
+      <result column="line_prod_no"  property="prod_no" />
+      <result column="PROD_NAME"  property="prod_name" />
+      <result column="PROD_PRICE"  property="prod_price" />
+                <!-- 실제 컬럼명 -->  <!-- 필드명과동일 -->
+    </association>    
+  </collection>
+</resultMap>
+
+<!--상품별  resultMap="StatMap 으로 뽑아보기-->
+<select id="productOrderStat" resultMap="StatMap">
+select LINE_PROD_NO, prod_name, INFO_ID as id, sum(LINE_QUANTITY) as sum
+from order_info info join order_line line
+on info.INFO_NO = line.LINE_INFO_NO join product p
+on line.LINE_PROD_NO = p.PROD_NO 
+group by rollup(LINE_PROD_NO,(prod_name,INFO_ID))
+order by LINE_PROD_NO,sum DESC
+</select>
+
+
+<!-- 고객별  resultType="hashmap" 으로 뽑아보기 -->
+<!-- <select id="customerOrderStat" resultMap="StatMap"> -->
+<select id="customerOrderStat" resultType="hashmap" parameterType="Customer">
+select info_id as id, line_prod_no, prod_name, sum(line_quantity) as sum
+from order_info info join order_line line
+on info.INFO_NO = line.LINE_INFO_NO join product p
+on line.LINE_PROD_NO = p.PROD_NO 
+group by rollup(INFO_ID, (LINE_PROD_NO,prod_name))
+	<if test="id!=null">
+	having info_id =#{id}  <!-- 고객이 조회 요청했을 경우 고객별로 불러오기 -->
+	</if>
+    order by info_id, sum DESC
+</select>
+
+
+<select id="dailyOrderStat" resultMap="StatMap">
+select info_no , info_id ,NAME , info_date , line_prod_no ,PROD_NAME , PROD_PRICE , sum(LINE_QUANTITY) as sum
+from order_info info join customer c
+on info.INFO_ID = c.id left outer join order_line line
+on info.info_no = line.line_info_no left outer join product prod
+on line.LINE_PROD_NO = prod.PROD_NO
+group by info_no , info_id ,NAME , info_date , line_prod_no ,PROD_NAME , PROD_PRICE
+order by info_no , info_id
+
+</select>
+
+<!-- select LINE_PROD_NO, INFO_DATE, prod_name, info_id as id, sum(LINE_QUANTITY) as sum
+       from order_info info join order_line line
+       on info.INFO_NO = line.LINE_INFO_NO join product p
+       on line.LINE_PROD_NO = p.PROD_NO 
+       group by rollup(INFO_DATE,(prod_name,INFO_ID,LINE_PROD_NO))
+       order by INFO_DATE desc,LINE_PROD_NO desc,sum desc -->
+       
+
+
+
+       <!-- select INFO_DATE ,LINE_PROD_NO, prod_name, sum(line_quantity) as sum
+       from order_info info join order_line line
+       on info.INFO_NO = line.LINE_INFO_NO join product p
+       on line.LINE_PROD_NO = p.PROD_NO
+       group by LINE_PROD_NO, prod_name,INFO_DATE
+       order by info_date desc -->
+
+
+
+
+
+<update id="status" parameterType="java.util.Map">
+<!-- update customer set status=#{status} where id=#{id} -->
+UPDATE customer SET status=#{status} WHERE id
+
+<if test="flag.equals('ck')">
+IN (${id})
+</if>
+<if test="flag.equals('bt')">
+=#{id}
+</if>
+
+</update>
+
+
+<update id="adminmodify" parameterType="java.util.Map">
+update admin set password=#{password} where id=#{id}
+</update>
+
+
+
+<select id="selectById" parameterType="String"
+                        resultType="Admin">
+select * from admin where id=#{id}
+</select>
+
+<select id="selectAll"  resultType="Admin">
+select * from admin order by id
+</select>
+
+
+<insert id="insert" parameterType="Admin" >
+insert into admin values (#{id},#{password},#{name})
+</insert>
+
+
+</mapper>
+
+
+
+
+
+
